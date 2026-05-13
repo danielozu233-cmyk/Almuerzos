@@ -167,14 +167,13 @@
         { nombre: "Daniel Coyoy", ext: 8014 }, { nombre: "Nestor Galvez", ext: 8015 },
         { nombre: "Andrea Jiménez", ext: 8016 }, { nombre: "Diego Chiché", ext: 8017 },
         { nombre: "Ashley López", ext: 8018 }, { nombre: "Synndy Sanchez", ext: 8020 },
-        { nombre: "Mishell de León", ext: 8021 }, { nombre: "Omar Ramirez", ext: 8022 },
-        { nombre: "Madelin Ovando", ext: 8023 }, { nombre: "Evelyn de León", ext: 8024 },
+        { nombre: "Mishell de León", ext: 8021 },{ nombre: "Madelin Ovando", ext: 8023 },
         { nombre: "Andres Marín", ext: 8025 }, { nombre: "Bryan Hernandez", ext: 8026 },
         { nombre: "Rafael Sánchez", ext: 8027 }, { nombre: "Marta Morales", ext: 8028 },
         { nombre: "Pablo Ibañez", ext: 8029 }, { nombre: "María Perdomo", ext: 8030 }
     ];
 
-    const slots = ["12:00 - 13:00", "13:00 - 14:00", "15:00 - 16:00"];
+    const slots = ["12:00 - 13:00", "13:00 - 14:00", "14:00 - 15:00"];
     let fullScheduleData = [];
 
     function shuffle(array) {
@@ -229,7 +228,7 @@
                     slots: {
                         "12:00-13:00": distribution[0],
                         "13:00-14:00": distribution[1],
-                        "15:00-16:00": distribution[2]
+                        "14:00-15:00": distribution[2]
                     }
                 });
             }
@@ -263,7 +262,7 @@
                 const tableData = [
                     ["12:00 - 13:00", day.slots["12:00-13:00"].join(", ")],
                     ["13:00 - 14:00", day.slots["13:00-14:00"].join(", ")],
-                    ["15:00 - 16:00", day.slots["15:00-16:00"].join(", ")]
+                    ["14:00 - 15:00", day.slots["14:00-15:00"].join(", ")]
                 ];
 
                 doc.autoTable({
