@@ -32,7 +32,7 @@
     const agentes = [
         { nombre: "Saraí Churumia", fac: "Económicas", in10: true },
         { nombre: "Gabriela Jaes", fac: "Económicas" },
-        { nombre: "Javier Alvarez", fac: "Económicas", out4: true }, // Javier sale a las 4
+        { nombre: "Javier Alvarez", fac: "Económicas", out4: true },
         { nombre: "Merlin Bajan", fac: "Odonto.", fijo12: true },
         { nombre: "Mónica Ordóñez", fac: "Odonto." },
         { nombre: "Alejandro Vásquez", fac: "Salud", out4: true }, 
@@ -41,8 +41,7 @@
         { nombre: "Mildred Cordero", fac: "Jurídicas", out4: true }, 
         { nombre: "Tania de León", fac: "Jurídicas", in10: true },
         { nombre: "Anthony García", fac: "Jurídicas", out4: true }, 
-        { nombre: "Jorge Veliz", fac: "Médicas" },
-        { nombre: "Daniel Coyoy", fac: "Médicas" },
+        { nombre: "Daniel Coyoy", fac: "Médicas" }, // Jorge Veliz removido de aquí
         { nombre: "Nestor Galvez", fac: "FACOM", in10: true },
         { nombre: "Andrea Jiménez", fac: "FACOM" },
         { nombre: "Diego Chiché", fac: "FACOM" },
@@ -58,75 +57,157 @@
         { nombre: "María Perdomo", fac: "UVIRTUAL" }
     ];
 
+    const ordenFacultades = [
+        "FACOM", "FACEDU", "Económicas", "Salud", "Jurídicas", 
+        "Ingeniería", "Arquitectura", "Odonto.", "Médicas", 
+        "Humanidades", "UVIRTUAL", "Teología"
+    ];
+
+    const coloresFacultad = {
+        "FACOM": [31, 110, 140],       
+        "FACEDU": [100, 180, 220],     
+        "Económicas": [190, 80, 40],   
+        "Salud": [210, 160, 10],       
+        "Jurídicas": [180, 20, 20],     
+        "Ingeniería": [60, 60, 60],     
+        "Odonto.": [120, 40, 120],     
+        "Humanidades": [20, 20, 20],   
+        "UVIRTUAL": [40, 140, 60],     
+        "Teología": [100, 150, 190],   
+        "Arquitectura": [150, 70, 30], 
+        "Médicas": [210, 160, 10]      
+    };
+
+    function intentarDistribucion() {
+        let slots = [[], [], []];
+        let facsPorSlot = [new Set(), new Set(), new Set()];
+        let pool = [...agentes].sort(() => Math.random() - 0.5);
+
+        let mIdx = pool.findIndex(a => a.fijo12);
+        if(mIdx !== -1) { 
+            let m = pool.splice(mIdx, 1)[0]; 
+            slots[0].push(m); 
+            facsPorSlot[0].add(m.fac);
+        }
+
+        const maxCapacidad = Math.ceil(agentes.length / 3); 
+
+        for (let ag of pool) {
+            let slotsPermitidos = [0, 1, 2].filter(s => {
+                if (ag.in10 && s === 0) return false;
+                if (ag.out4 && s === 2) return false;
+                if (slots[s].length >= maxCapacidad) return false; 
+                return true;
+            });
+
+            slotsPermitidos.sort((a, b) => {
+                let tieneFacA = facsPorSlot[a].has(ag.fac) ? 1 : 0;
+                let tieneFacB = facsPorSlot[b].has(ag.fac) ? 1 : 0;
+                if (tieneFacA !== tieneFacB) return tieneFacA - tieneFacB;
+                return slots[a].length - slots[b].length;
+            });
+
+            if (slotsPermitidos.length === 0) return null; 
+
+            let seleccionado = slotsPermitidos[0];
+            slots[seleccionado].push(ag);
+            facsPorSlot[seleccionado].add(ag.fac);
+        }
+
+        for (let i = 0; i < 3; i++) {
+            let conteoFacultades = {};
+            for (let ag of slots[i]) {
+                conteoFacultades[ag.fac] = (conteoFacultades[ag.fac] || 0) + 1;
+                if (conteoFacultades[ag.fac] > 1) {
+                    return null; 
+                }
+            }
+        }
+
+        return slots;
+    }
+
     function generateMonthly() {
         const startStr = document.getElementById('startDate').value;
         if(!startStr) return alert("Selecciona el lunes inicial.");
         
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+        const doc = new jsPDF('p', 'mm', 'a4');
         let baseDate = new Date(startStr + "T00:00:00");
 
-        doc.setFontSize(18); doc.setTextColor(15, 23, 42);
-        doc.text("CRONOGRAMA DE ALMUERZOS", 105, 15, {align:'center'});
-
-        let yPos = 25;
+        let yPos = 15;
 
         for(let w=0; w<4; w++) {
             let weekStart = new Date(baseDate); weekStart.setDate(baseDate.getDate() + (w * 7));
             let weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 4);
             
-            let slots = [[], [], []];
-            let facsUsed = [new Set(), new Set(), new Set()];
-            let pool = [...agentes].sort(() => Math.random() - 0.5);
+            let slots = null;
+            let intentos = 0;
+            while (!slots && intentos < 5000) {
+                slots = intentarDistribucion();
+                intentos++;
+            }
 
-            let mIdx = pool.findIndex(a => a.fijo12);
-            if(mIdx !== -1) { let m = pool.splice(mIdx, 1)[0]; slots[0].push(m); facsUsed[0].add(m.fac); }
+            if (!slots) {
+                alert(`No se logró una combinación perfecta para la Semana ${w+1} debido a las restricciones horarias. Inténtalo de nuevo.`);
+                return;
+            }
 
-            pool.forEach(ag => {
-                let slotsPermitidos = [0, 1, 2].filter(s => {
-                    if (ag.in10 && s === 0) return false;
-                    if (ag.out4 && s === 2) return false; 
-                    return true;
-                });
+            for (let i = 0; i < 3; i++) {
+                slots[i].sort((a, b) => ordenFacultades.indexOf(a.fac) - ordenFacultades.indexOf(b.fac));
+            }
 
-                let order = slotsPermitidos.sort((a,b) => slots[a].length - slots[b].length);
-                let ok = false;
-                for(let s of order) {
-                    if(!facsUsed[s].has(ag.fac)) {
-                        slots[s].push(ag); facsUsed[s].add(ag.fac); ok = true; break;
-                    }
-                }
-                if(!ok) {
-                    let fallback = slotsPermitidos.sort((a,b) => slots[a].length - slots[b].length)[0];
-                    slots[fallback].push(ag);
-                }
-            });
+            let maxFilas = Math.max(slots[0].length, slots[1].length, slots[2].length);
+            let bodyData = [];
 
-            let xPos = (w % 2 === 0) ? 10 : 108;
+            for (let f = 0; f < maxFilas; f++) {
+                bodyData.push([
+                    slots[0][f] ? { content: `${slots[0][f].nombre}\n(${slots[0][f].fac})`, data: slots[0][f] } : "",
+                    slots[1][f] ? { content: `${slots[1][f].nombre}\n(${slots[1][f].fac})`, data: slots[1][f] } : "",
+                    slots[2][f] ? { content: `${slots[2][f].nombre}\n(${slots[2][f].fac})`, data: slots[2][f] } : ""
+                ]);
+            }
+
             const rango = `${weekStart.getDate()}/${weekStart.getMonth()+1} al ${weekEnd.getDate()}/${weekEnd.getMonth()+1}`;
 
             doc.autoTable({
                 startY: yPos,
-                margin: { left: xPos },
-                tableWidth: 92,
-                pageBreak: 'avoid',
-                head: [[{content: `SEMANA ${w+1} (${rango})`, colSpan: 2, styles:{halign:'center', fillColor:[15,23,42]}}], 
-                       ['Horario', 'Personal (Facultad)']],
-                body: slots.map((s, i) => [
-                    i==0 ? '12:00' : i==1 ? '13:00' : '14:00',
-                    s.map(a => `${a.nombre} (${a.fac})`).join("\n")
-                ]),
+                margin: { left: 10, right: 10 },
+                head: [
+                    [{content: `Horario Almuerzos ${rango}`, colSpan: 3, styles: {halign: 'center', fillColor: [255, 242, 0], textColor: [0,0,0], fontStyle: 'bold', fontSize: 10}}],
+                    [
+                        {content: '12:00', styles: {fillColor: [210, 245, 215], textColor: [0,0,0], halign: 'center', fontStyle: 'bold'}}, 
+                        {content: '13:00', styles: {fillColor: [250, 230, 220], textColor: [0,0,0], halign: 'center', fontStyle: 'bold'}}, 
+                        {content: '14:00', styles: {fillColor: [215, 240, 250], textColor: [0,0,0], halign: 'center', fontStyle: 'bold'}}
+                    ]
+                ],
+                body: bodyData,
                 theme: 'grid',
-                styles: { fontSize: 5.5, cellPadding: 1.5, overflow: 'linebreak' },
-                columnStyles: { 0: {cellWidth: 15, fontStyle: 'bold', halign: 'center'}, 1: {cellWidth: 77} },
-                headStyles: { fillColor: [37, 99, 235] }
+                styles: { fontSize: 7.5, cellPadding: 2, font: 'Helvetica' },
+                columnStyles: {
+                    0: { fillColor: [235, 255, 240] }, 
+                    1: { fillColor: [255, 245, 240] },
+                    2: { fillColor: [235, 248, 255] }
+                },
+                didParseCell: function(data) {
+                    if (data.section === 'body' && data.cell.raw && data.cell.raw.data) {
+                        let fac = data.cell.raw.data.fac;
+                        if (coloresFacultad[fac]) {
+                            data.cell.styles.textColor = coloresFacultad[fac];
+                            data.cell.styles.fontStyle = 'bold';
+                        }
+                    }
+                }
             });
 
-            if (w % 2 !== 0) yPos = doc.lastAutoTable.finalY + 12;
-            if (yPos > 240 && w < 3) { doc.addPage(); yPos = 20; }
+            yPos = doc.lastAutoTable.finalY + 15;
+            if (yPos > 220 && w < 3) { 
+                doc.addPage(); 
+                yPos = 15; 
+            }
         }
 
-        doc.save("Cronograma_Mensual.pdf");
+        doc.save("Cronograma_Almuerzos_Final.pdf");
     }
 </script>
 </body>
