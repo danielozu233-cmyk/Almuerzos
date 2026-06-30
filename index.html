@@ -33,13 +33,15 @@
         { nombre: "Saraí Churumia", fac: "Económicas", in10: true },
         { nombre: "Gabriela Jaes", fac: "Económicas" },
         { nombre: "Javier Alvarez", fac: "Económicas", out4: true },
+        { nombre: "Merlin Bajan", fac: "Odonto.", fijo12: true },
         { nombre: "Mónica Ordóñez", fac: "Odonto." },
         { nombre: "Alejandro Vásquez", fac: "Salud", out4: true }, 
         { nombre: "Joselyne Velásquez", fac: "Salud" },
         { nombre: "Jackeline Castillo", fac: "Salud", in10: true },
         { nombre: "Mildred Cordero", fac: "Jurídicas", out4: true }, 
+        { nombre: "Tania de León", fac: "Jurídicas", in10: true },
         { nombre: "Anthony García", fac: "Jurídicas", out4: true }, 
-        { nombre: "Daniel Coyoy", fac: "Médicas" },
+        { nombre: "Daniel Coyoy", fac: "Médicas" }, // Jorge Veliz removido de aquí
         { nombre: "Nestor Galvez", fac: "FACOM", in10: true },
         { nombre: "Andrea Jiménez", fac: "FACOM" },
         { nombre: "Diego Chiché", fac: "FACOM" },
@@ -48,6 +50,7 @@
         { nombre: "Mishell de León", fac: "FACEDU", in10: true },
         { nombre: "Madelin Ovando", fac: "Humanidades" },
         { nombre: "Bryan Hernandez", fac: "Ingeniería" },
+        { nombre: "Rafael Sánchez", fac: "Arquitectura", in10: true },
         { nombre: "Marta Morales", fac: "Teología", in10: true },
         { nombre: "Pablo Ibañez", fac: "UVIRTUAL", out4: true }, 
         { nombre: "María Perdomo", fac: "UVIRTUAL" }
@@ -77,7 +80,9 @@
     function intentarDistribucion() {
         let slots = [[], [], []];
         let facsPorSlot = [new Set(), new Set(), new Set()];
-        let pool = [...agentes].sort(() => Math.random() - 0.5);
+        const nombresJuntos = new Set(["Daniel Coyoy", "Nestor Galvez"]);
+        const grupoJuntos = agentes.filter(a => nombresJuntos.has(a.nombre));
+        let pool = agentes.filter(a => !nombresJuntos.has(a.nombre)).sort(() => Math.random() - 0.5);
 
         let mIdx = pool.findIndex(a => a.fijo12);
         if(mIdx !== -1) { 
@@ -88,26 +93,34 @@
 
         const maxCapacidad = Math.ceil(agentes.length / 3); 
 
-        for (let ag of pool) {
+        const colocarGrupo = (grupo) => {
             let slotsPermitidos = [0, 1, 2].filter(s => {
-                if (ag.in10 && s === 0) return false;
-                if (ag.out4 && s === 2) return false;
-                if (slots[s].length >= maxCapacidad) return false; 
+                if (grupo.some(ag => ag.in10 && s === 0)) return false;
+                if (grupo.some(ag => ag.out4 && s === 2)) return false;
+                if (slots[s].length + grupo.length > maxCapacidad) return false;
+                if (grupo.some(ag => facsPorSlot[s].has(ag.fac))) return false;
                 return true;
             });
 
-            slotsPermitidos.sort((a, b) => {
-                let tieneFacA = facsPorSlot[a].has(ag.fac) ? 1 : 0;
-                let tieneFacB = facsPorSlot[b].has(ag.fac) ? 1 : 0;
-                if (tieneFacA !== tieneFacB) return tieneFacA - tieneFacB;
-                return slots[a].length - slots[b].length;
-            });
+            slotsPermitidos = slotsPermitidos
+                .map(s => ({ slot: s, orden: Math.random() }))
+                .sort((a, b) => (slots[a.slot].length - slots[b.slot].length) || (a.orden - b.orden))
+                .map(item => item.slot);
 
-            if (slotsPermitidos.length === 0) return null; 
+            if (slotsPermitidos.length === 0) return false;
 
             let seleccionado = slotsPermitidos[0];
-            slots[seleccionado].push(ag);
-            facsPorSlot[seleccionado].add(ag.fac);
+            for (let ag of grupo) {
+                slots[seleccionado].push(ag);
+                facsPorSlot[seleccionado].add(ag.fac);
+            }
+            return true;
+        };
+
+        if (!colocarGrupo(grupoJuntos)) return null;
+
+        for (let ag of pool) {
+            if (!colocarGrupo([ag])) return null;
         }
 
         for (let i = 0; i < 3; i++) {
