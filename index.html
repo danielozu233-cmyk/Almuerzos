@@ -1,12 +1,3 @@
-Aquí está el código completo actualizado. Cambios realizados:
-
-* Nombres completos de Karen, Angélica y José David.
-* Agregados Marilyn Alexandra Molina Ramírez y Jorge Eduardo Enrique Hernandez Lima.
-* Todos ellos marcados como salida a las 5.
-* **Néstor Gálvez queda fijo a las 13:00**.
-* Merlin Bajan permanece fijo a las 12:00.
-* Corregí `"No Fac."` para que coincida correctamente con el orden y los colores.
-
 ```html
 <!DOCTYPE html>
 <html lang="es">
@@ -16,94 +7,204 @@ Aquí está el código completo actualizado. Cambios realizados:
 
     <title>Almuerzos CC</title>
 
+    <!-- jsPDF -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- jsPDF AutoTable -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 
+    <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
     <style>
+
         :root {
             --navy: #0f172a;
             --blue: #2563eb;
             --accent: #38bdf8;
         }
 
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background: var(--navy);
             color: white;
             font-family: 'Poppins', sans-serif;
+
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 50px;
+
+            min-height: 100vh;
+
+            padding: 50px 20px;
+            margin: 0;
         }
 
         .card {
             background: rgba(30, 41, 59, 0.8);
+
             padding: 40px;
+
             border-radius: 24px;
+
             text-align: center;
+
             border: 1px solid rgba(255,255,255,0.1);
+
             width: 100%;
             max-width: 550px;
+
+            box-shadow:
+                0 20px 40px rgba(0,0,0,0.25);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2rem;
         }
 
         h1 span {
             color: var(--accent);
         }
 
+        .subtitle {
+            opacity: 0.7;
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        .field {
+            text-align: left;
+            margin-top: 25px;
+        }
+
+        label {
+            display: block;
+
+            font-size: 0.75rem;
+
+            color: #94a3b8;
+
+            letter-spacing: 1px;
+
+            font-weight: 600;
+        }
+
+        input {
+            padding: 14px;
+
+            border-radius: 10px;
+
+            border: none;
+
+            width: 100%;
+
+            margin-top: 10px;
+
+            background: #1e293b;
+
+            color: white;
+
+            font-family: 'Poppins', sans-serif;
+
+            outline: none;
+        }
+
+        input:focus {
+            box-shadow:
+                0 0 0 2px var(--accent);
+        }
+
         .btn {
             padding: 14px 30px;
+
             border-radius: 12px;
+
             border: none;
+
             cursor: pointer;
+
             font-weight: 600;
+
+            font-family: 'Poppins', sans-serif;
+
             background: var(--blue);
+
             color: white;
-            transition: 0.4s;
+
+            transition: 0.3s;
+
             width: 100%;
+
             margin-top: 20px;
         }
 
         .btn:hover {
             background: #1d4ed8;
+
             transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+
+            box-shadow:
+                0 10px 20px rgba(37, 99, 235, 0.4);
         }
 
-        input {
-            padding: 14px;
-            border-radius: 10px;
-            border: none;
-            width: 100%;
-            margin-top: 10px;
-            background: #1e293b;
-            color: white;
-            box-sizing: border-box;
+        .btn:active {
+            transform: translateY(0);
         }
+
+        .info {
+            margin-top: 20px;
+
+            font-size: 0.72rem;
+
+            color: #94a3b8;
+
+            line-height: 1.6;
+        }
+
     </style>
 </head>
 
 <body>
 
     <div class="card">
-        <h1>Almuerzos <span>CC</span></h1>
 
-        <p style="opacity: 0.7; font-size: 0.9rem;">
+        <h1>
+            Almuerzos <span>CC</span>
+        </h1>
+
+        <div class="subtitle">
             Cronograma Mensual
-        </p>
+        </div>
 
-        <div style="text-align: left; margin-top: 25px;">
-            <label style="font-size: 0.75rem; color: #94a3b8; letter-spacing: 1px; font-weight: 600;">
+        <div class="field">
+
+            <label for="startDate">
                 FECHA INICIAL (LUNES SEMANA 1)
             </label>
 
-            <input type="date" id="startDate">
+            <input
+                type="date"
+                id="startDate"
+            >
+
         </div>
 
-        <button class="btn" onclick="generateMonthly()">
+        <button
+            class="btn"
+            onclick="generateMonthly()"
+        >
             Descargar
         </button>
+
+        <div class="info">
+            El sistema genera automáticamente 4 semanas
+            respetando las restricciones de horario y facultad.
+        </div>
+
     </div>
 
 
@@ -115,62 +216,244 @@ Aquí está el código completo actualizado. Cambios realizados:
 
     const agentes = [
 
+        // -----------------------------------------------------
         // ECONÓMICAS
-        { nombre: "Saraí Churumia", fac: "Económicas", in10: true },
-        { nombre: "Gabriela Jaes", fac: "Económicas" },
-        { nombre: "Javier Alvarez", fac: "Económicas", out4: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Saraí Churumia",
+            fac: "Económicas",
+            in10: true
+        },
+
+        {
+            nombre: "Gabriela Jaes",
+            fac: "Económicas"
+        },
+
+        {
+            nombre: "Javier Alvarez",
+            fac: "Económicas",
+            out4: true
+        },
+
+
+        // -----------------------------------------------------
         // ODONTOLOGÍA
-        { nombre: "Merlin Bajan", fac: "Odonto.", fijo12: true },
-        { nombre: "Mónica Ordóñez", fac: "Odonto." },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Merlin Bajan",
+            fac: "Odonto.",
+            fijo12: true
+        },
+
+        {
+            nombre: "Mónica Ordóñez",
+            fac: "Odonto."
+        },
+
+
+        // -----------------------------------------------------
         // SALUD
-        { nombre: "Alejandro Vásquez", fac: "Salud", out4: true },
-        { nombre: "Joselyne Velásquez", fac: "Salud" },
-        { nombre: "Jackeline Castillo", fac: "Salud", in10: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Alejandro Vásquez",
+            fac: "Salud",
+            out4: true
+        },
+
+        {
+            nombre: "Joselyne Velásquez",
+            fac: "Salud"
+        },
+
+        {
+            nombre: "Jackeline Castillo",
+            fac: "Salud",
+            in10: true
+        },
+
+
+        // -----------------------------------------------------
         // JURÍDICAS
-        { nombre: "Mildred Cordero", fac: "Jurídicas", out4: true },
-        { nombre: "Tania de León", fac: "Jurídicas", in10: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Mildred Cordero",
+            fac: "Jurídicas",
+            out4: true
+        },
+
+        {
+            nombre: "Tania de León",
+            fac: "Jurídicas",
+            in10: true
+        },
+
+        // NUEVO
+        {
+            nombre: "Jorge Eduardo Enrique Hernandez Lima",
+            fac: "Jurídicas",
+            out5: true
+        },
+
+
+        // -----------------------------------------------------
         // HUMANIDADES
-        { nombre: "Evelyn De León", fac: "Humanidades", out5: true },
-        { nombre: "Angelica Abigail Galvez Alvarez", fac: "Humanidades", out5: true },
-        { nombre: "José David López Morales", fac: "Humanidades", out5: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Evelyn De León",
+            fac: "Humanidades",
+            out5: true
+        },
+
+        {
+            nombre: "Angelica Abigail Galvez Alvarez",
+            fac: "Humanidades",
+            out5: true
+        },
+
+        {
+            nombre: "José David López Morales",
+            fac: "Humanidades",
+            out5: true
+        },
+
+
+        // -----------------------------------------------------
         // NO FACULTAD
-        { nombre: "Daniel Coyoy", fac: "No Fac." },
-        { nombre: "Marilyn Alexandra Molina Ramírez", fac: "No Fac.", out5: true },
-        { nombre: "Jorge Eduardo Enrique Hernandez Lima", fac: "No Fac.", out5: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Daniel Coyoy",
+            fac: "No Fac."
+        },
+
+
+        // -----------------------------------------------------
         // MÉDICAS
-        { nombre: "Jorge Veliz", fac: "Médicas", out5: true },
-        { nombre: "Karen Sofía Ochoa Arana", fac: "Médicas", out5: true },
-        { nombre: "Madelin Ovando", fac: "Médicas" },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Jorge Veliz",
+            fac: "Médicas",
+            out5: true
+        },
+
+        // NUEVO
+        {
+            nombre: "Karen Sofía Ochoa Arana",
+            fac: "Médicas",
+            out5: true
+        },
+
+        {
+            nombre: "Madelin Ovando",
+            fac: "Médicas"
+        },
+
+
+        // -----------------------------------------------------
         // FACOM
-        // NÉSTOR SIEMPRE ALMUERZA A LAS 13:00
-        { nombre: "Nestor Galvez", fac: "FACOM", fijo13: true },
-        { nombre: "Andrea Jiménez", fac: "FACOM" },
-        { nombre: "Diego Chiché", fac: "FACOM" },
+        // -----------------------------------------------------
 
+        // NÉSTOR TIENE ALMUERZO FIJO A LAS 13:00
+        {
+            nombre: "Nestor Galvez",
+            fac: "FACOM",
+            fijo13: true
+        },
+
+        {
+            nombre: "Andrea Jiménez",
+            fac: "FACOM"
+        },
+
+        {
+            nombre: "Diego Chiché",
+            fac: "FACOM"
+        },
+
+
+        // -----------------------------------------------------
         // FACEDU
-        { nombre: "Ashley López", fac: "FACEDU", out4: true },
-        { nombre: "Synndy Sanchez", fac: "FACEDU" },
-        { nombre: "Mishell de León", fac: "FACEDU", in10: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Ashley López",
+            fac: "FACEDU",
+            out4: true
+        },
+
+        {
+            nombre: "Synndy Sanchez",
+            fac: "FACEDU"
+        },
+
+        {
+            nombre: "Mishell de León",
+            fac: "FACEDU",
+            in10: true
+        },
+
+
+        // -----------------------------------------------------
         // INGENIERÍA
-        { nombre: "Bryan Hernandez", fac: "Ingeniería" },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Bryan Hernandez",
+            fac: "Ingeniería"
+        },
+
+        // NUEVO
+        {
+            nombre: "Marilyn Alexandra Molina Ramírez",
+            fac: "Ingeniería",
+            out5: true
+        },
+
+
+        // -----------------------------------------------------
         // ARQUITECTURA
-        { nombre: "Rafael Sánchez", fac: "Arquitectura", in10: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Rafael Sánchez",
+            fac: "Arquitectura",
+            in10: true
+        },
+
+
+        // -----------------------------------------------------
         // TEOLOGÍA
-        { nombre: "Marta Morales", fac: "Teología", in10: true },
+        // -----------------------------------------------------
 
+        {
+            nombre: "Marta Morales",
+            fac: "Teología",
+            in10: true
+        },
+
+
+        // -----------------------------------------------------
         // UVIRTUAL
-        { nombre: "Pablo Ibañez", fac: "UVIRTUAL", out4: true },
-        { nombre: "María Perdomo", fac: "UVIRTUAL" }
+        // -----------------------------------------------------
+
+        {
+            nombre: "Pablo Ibañez",
+            fac: "UVIRTUAL",
+            out4: true
+        },
+
+        {
+            nombre: "María Perdomo",
+            fac: "UVIRTUAL"
+        }
+
     ];
 
 
@@ -179,6 +462,7 @@ Aquí está el código completo actualizado. Cambios realizados:
     // =========================================================
 
     const ordenFacultades = [
+
         "No Fac.",
         "FACOM",
         "FACEDU",
@@ -192,11 +476,12 @@ Aquí está el código completo actualizado. Cambios realizados:
         "Humanidades",
         "UVIRTUAL",
         "Teología"
+
     ];
 
 
     // =========================================================
-    // COLORES POR FACULTAD
+    // COLORES DE FACULTADES
     // =========================================================
 
     const coloresFacultad = {
@@ -215,18 +500,52 @@ Aquí está el código completo actualizado. Cambios realizados:
 
         "Ingeniería": [60, 60, 60],
 
+        "Arquitectura": [150, 70, 30],
+
         "Odonto.": [120, 40, 120],
+
+        "Médicas": [210, 160, 10],
 
         "Humanidades": [20, 20, 20],
 
         "UVIRTUAL": [40, 140, 60],
 
-        "Teología": [100, 150, 190],
+        "Teología": [100, 150, 190]
 
-        "Arquitectura": [150, 70, 30],
-
-        "Médicas": [210, 160, 10]
     };
+
+
+    // =========================================================
+    // MEZCLAR ARRAY
+    // =========================================================
+
+    function mezclarArray(array) {
+
+        const resultado = [...array];
+
+        for (
+            let i = resultado.length - 1;
+            i > 0;
+            i--
+        ) {
+
+            const j =
+                Math.floor(
+                    Math.random() * (i + 1)
+                );
+
+            [
+                resultado[i],
+                resultado[j]
+            ] =
+            [
+                resultado[j],
+                resultado[i]
+            ];
+        }
+
+        return resultado;
+    }
 
 
     // =========================================================
@@ -235,34 +554,56 @@ Aquí está el código completo actualizado. Cambios realizados:
 
     function intentarDistribucion() {
 
-        // 0 = 12:00
-        // 1 = 13:00
-        // 2 = 14:00
+        /*
+            SLOT 0 = 12:00
+            SLOT 1 = 13:00
+            SLOT 2 = 14:00
+        */
 
-        let slots = [[], [], []];
+        const slots = [
+            [],
+            [],
+            []
+        ];
 
-        let facsPorSlot = [
+
+        const facsPorSlot = [
             new Set(),
             new Set(),
             new Set()
         ];
 
-        let pool = [...agentes].sort(() => Math.random() - 0.5);
+
+        // Mezclar agentes
+
+        let pool =
+            mezclarArray(agentes);
 
 
         // =====================================================
         // MERLIN FIJO A LAS 12:00
         // =====================================================
 
-        let merlinIdx = pool.findIndex(a => a.fijo12);
+        const merlinIndex =
+            pool.findIndex(
+                agente => agente.fijo12
+            );
 
-        if (merlinIdx !== -1) {
 
-            let merlin = pool.splice(merlinIdx, 1)[0];
+        if (merlinIndex !== -1) {
+
+            const merlin =
+                pool.splice(
+                    merlinIndex,
+                    1
+                )[0];
+
 
             slots[0].push(merlin);
 
-            facsPorSlot[0].add(merlin.fac);
+            facsPorSlot[0].add(
+                merlin.fac
+            );
         }
 
 
@@ -270,119 +611,128 @@ Aquí está el código completo actualizado. Cambios realizados:
         // NÉSTOR FIJO A LAS 13:00
         // =====================================================
 
-        let nestorIdx = pool.findIndex(a => a.fijo13);
+        const nestorIndex =
+            pool.findIndex(
+                agente => agente.fijo13
+            );
 
-        if (nestorIdx !== -1) {
 
-            let nestor = pool.splice(nestorIdx, 1)[0];
+        if (nestorIndex !== -1) {
+
+            const nestor =
+                pool.splice(
+                    nestorIndex,
+                    1
+                )[0];
+
 
             slots[1].push(nestor);
 
-            facsPorSlot[1].add(nestor.fac);
+            facsPorSlot[1].add(
+                nestor.fac
+            );
         }
 
 
         // =====================================================
-        // CAPACIDAD MÁXIMA
+        // CAPACIDAD
         // =====================================================
 
         const maxCapacidad =
-            Math.ceil(agentes.length / 3);
+            Math.ceil(
+                agentes.length / 3
+            );
 
 
         // =====================================================
         // COLOCAR AGENTE
         // =====================================================
 
-        const colocarGrupo = (grupo) => {
+        function colocarAgente(agente) {
 
-            let slotsPermitidos =
-                [0, 1, 2].filter(s => {
+            let permitidos =
+                [0, 1, 2].filter(slot => {
 
 
-                    // PERSONAS QUE ENTRAN A LAS 10
-                    // NO PUEDEN ALMORZAR A LAS 12
+                    // -----------------------------------------
+                    // ENTRA A LAS 10
+                    // NO PUEDE A LAS 12
+                    // -----------------------------------------
 
                     if (
-                        grupo.some(
-                            ag => ag.in10 && s === 0
-                        )
+                        agente.in10 &&
+                        slot === 0
                     ) {
                         return false;
                     }
 
 
-                    // PERSONAS QUE SALEN A LAS 4
-                    // NO PUEDEN ALMORZAR A LAS 2
+                    // -----------------------------------------
+                    // SALE A LAS 4
+                    // NO PUEDE A LAS 2
+                    // -----------------------------------------
 
                     if (
-                        grupo.some(
-                            ag => ag.out4 && s === 2
-                        )
+                        agente.out4 &&
+                        slot === 2
                     ) {
                         return false;
                     }
 
 
-                    // CONTROL DE CAPACIDAD
+                    // -----------------------------------------
+                    // CAPACIDAD
+                    // -----------------------------------------
 
                     if (
-                        slots[s].length + grupo.length
-                        >
+                        slots[slot].length >=
                         maxCapacidad
                     ) {
                         return false;
                     }
 
 
+                    // -----------------------------------------
                     // NO REPETIR FACULTAD
-                    // EN EL MISMO HORARIO
+                    // -----------------------------------------
 
                     if (
-                        grupo.some(
-                            ag => facsPorSlot[s].has(ag.fac)
-                        )
+                        facsPorSlot[slot]
+                            .has(agente.fac)
                     ) {
                         return false;
                     }
 
 
                     return true;
+
                 });
 
 
-            // Priorizar horarios con menos personas
+            // =================================================
+            // PRIORIZAR HORARIOS CON MENOS PERSONAS
+            // =================================================
 
-            slotsPermitidos =
-                slotsPermitidos
+            permitidos.sort(
+                (a, b) => {
 
-                    .map(s => ({
-                        slot: s,
-                        orden: Math.random()
-                    }))
-
-                    .sort(
-                        (a, b) =>
-                            (
-                                slots[a.slot].length
-                                -
-                                slots[b.slot].length
-                            )
-                            ||
-                            (
-                                a.orden
-                                -
-                                b.orden
-                            )
-                    )
-
-                    .map(item => item.slot);
+                    const diferencia =
+                        slots[a].length -
+                        slots[b].length;
 
 
-            // Si no hay horario disponible
+                    if (diferencia !== 0) {
+                        return diferencia;
+                    }
+
+
+                    return Math.random() - 0.5;
+                }
+            );
+
 
             if (
-                slotsPermitidos.length === 0
+                permitidos.length === 0
             ) {
                 return false;
             }
@@ -390,63 +740,154 @@ Aquí está el código completo actualizado. Cambios realizados:
 
             // Seleccionar horario
 
-            let seleccionado =
-                slotsPermitidos[0];
+            const slot =
+                permitidos[0];
 
 
-            // Agregar agente
+            // Agregar
 
-            for (let ag of grupo) {
+            slots[slot].push(
+                agente
+            );
 
-                slots[seleccionado].push(ag);
 
-                facsPorSlot[seleccionado].add(ag.fac);
-            }
+            facsPorSlot[slot].add(
+                agente.fac
+            );
 
 
             return true;
-        };
+        }
 
 
         // =====================================================
-        // DISTRIBUIR AGENTES
+        // COLOCAR PRIMERO LOS AGENTES MÁS RESTRINGIDOS
         // =====================================================
 
-        for (let ag of pool) {
+        pool.sort(
+            (a, b) => {
 
-            if (!colocarGrupo([ag])) {
+                const restriccionesA =
+                    (a.in10 ? 1 : 0) +
+                    (a.out4 ? 1 : 0);
+
+                const restriccionesB =
+                    (b.in10 ? 1 : 0) +
+                    (b.out4 ? 1 : 0);
+
+                return restriccionesB -
+                       restriccionesA;
+            }
+        );
+
+
+        // =====================================================
+        // DISTRIBUIR
+        // =====================================================
+
+        for (
+            const agente of pool
+        ) {
+
+            if (
+                !colocarAgente(agente)
+            ) {
+
                 return null;
             }
         }
 
 
         // =====================================================
-        // VERIFICACIÓN FINAL
+        // VALIDACIÓN FINAL
         // =====================================================
 
-        for (let i = 0; i < 3; i++) {
+        for (
+            let slot = 0;
+            slot < 3;
+            slot++
+        ) {
 
-            let conteoFacultades = {};
+            const facultades =
+                new Set();
 
 
-            for (let ag of slots[i]) {
+            for (
+                const agente of slots[slot]
+            ) {
 
-                conteoFacultades[ag.fac] =
-                    (
-                        conteoFacultades[ag.fac]
-                        ||
-                        0
-                    )
-                    +
-                    1;
-
+                // No puede repetirse facultad
 
                 if (
-                    conteoFacultades[ag.fac] > 1
+                    facultades.has(
+                        agente.fac
+                    )
                 ) {
+
+                    return null;
+                }
+
+
+                facultades.add(
+                    agente.fac
+                );
+
+
+                // Validar IN10
+
+                if (
+                    agente.in10 &&
+                    slot === 0
+                ) {
+
+                    return null;
+                }
+
+
+                // Validar OUT4
+
+                if (
+                    agente.out4 &&
+                    slot === 2
+                ) {
+
                     return null;
                 }
             }
+        }
+
+
+        // =====================================================
+        // VALIDAR FIJOS
+        // =====================================================
+
+        const merlin =
+            agentes.find(
+                agente => agente.fijo12
+            );
+
+
+        const nestor =
+            agentes.find(
+                agente => agente.fijo13
+            );
+
+
+        if (
+            merlin &&
+            !slots[0].includes(merlin)
+        ) {
+
+            return null;
+        }
+
+
+        if (
+            nestor &&
+            !slots[1].includes(nestor)
+        ) {
+
+            return null;
         }
 
 
@@ -455,24 +896,57 @@ Aquí está el código completo actualizado. Cambios realizados:
 
 
     // =========================================================
-    // GENERAR PDF MENSUAL
+    // GENERAR PDF
     // =========================================================
 
     function generateMonthly() {
 
         const startStr =
-            document.getElementById("startDate").value;
+            document
+                .getElementById("startDate")
+                .value;
 
 
         if (!startStr) {
 
-            alert("Selecciona el lunes inicial.");
+            alert(
+                "Selecciona el lunes inicial."
+            );
 
             return;
         }
 
 
-        const { jsPDF } = window.jspdf;
+        // =====================================================
+        // VALIDAR QUE SEA LUNES
+        // =====================================================
+
+        const fechaSeleccionada =
+            new Date(
+                startStr + "T00:00:00"
+            );
+
+
+        const diaSemana =
+            fechaSeleccionada.getDay();
+
+
+        if (diaSemana !== 1) {
+
+            alert(
+                "La fecha inicial debe ser un lunes."
+            );
+
+            return;
+        }
+
+
+        // =====================================================
+        // CREAR PDF
+        // =====================================================
+
+        const { jsPDF } =
+            window.jspdf;
 
 
         const doc =
@@ -483,7 +957,7 @@ Aquí está el código completo actualizado. Cambios realizados:
             );
 
 
-        let baseDate =
+        const baseDate =
             new Date(
                 startStr + "T00:00:00"
             );
@@ -493,47 +967,62 @@ Aquí está el código completo actualizado. Cambios realizados:
 
 
         // =====================================================
-        // GENERAR 4 SEMANAS
+        // 4 SEMANAS
         // =====================================================
 
-        for (let w = 0; w < 4; w++) {
+        for (
+            let semana = 0;
+            semana < 4;
+            semana++
+        ) {
 
+            // -------------------------------------------------
+            // FECHA INICIO
+            // -------------------------------------------------
 
-            let weekStart =
-                new Date(baseDate);
+            const weekStart =
+                new Date(
+                    baseDate
+                );
 
 
             weekStart.setDate(
-                baseDate.getDate()
-                +
-                (w * 7)
+                baseDate.getDate() +
+                (semana * 7)
             );
 
 
-            let weekEnd =
-                new Date(weekStart);
+            // -------------------------------------------------
+            // FECHA FIN - VIERNES
+            // -------------------------------------------------
+
+            const weekEnd =
+                new Date(
+                    weekStart
+                );
 
 
             weekEnd.setDate(
-                weekStart.getDate()
-                +
+                weekStart.getDate() +
                 4
             );
 
 
             // =================================================
-            // BUSCAR DISTRIBUCIÓN VÁLIDA
+            // BUSCAR DISTRIBUCIÓN
             // =================================================
 
             let slots = null;
 
             let intentos = 0;
 
+            const maxIntentos =
+                20000;
+
 
             while (
-                !slots
-                &&
-                intentos < 10000
+                !slots &&
+                intentos < maxIntentos
             ) {
 
                 slots =
@@ -543,10 +1032,14 @@ Aquí está el código completo actualizado. Cambios realizados:
             }
 
 
+            // =================================================
+            // ERROR
+            // =================================================
+
             if (!slots) {
 
                 alert(
-                    `No se logró una combinación perfecta para la Semana ${w + 1} debido a las restricciones horarias.`
+                    `No se pudo generar una distribución válida para la Semana ${semana + 1}.`
                 );
 
                 return;
@@ -554,26 +1047,46 @@ Aquí está el código completo actualizado. Cambios realizados:
 
 
             // =================================================
-            // ORDENAR POR FACULTAD
+            // ORDENAR FACULTADES
             // =================================================
 
-            for (let i = 0; i < 3; i++) {
+            for (
+                let slot = 0;
+                slot < 3;
+                slot++
+            ) {
 
-                slots[i].sort(
-                    (a, b) =>
+                slots[slot].sort(
+                    (a, b) => {
 
-                        ordenFacultades.indexOf(a.fac)
-                        -
-                        ordenFacultades.indexOf(b.fac)
+                        const indexA =
+                            ordenFacultades
+                                .indexOf(
+                                    a.fac
+                                );
+
+
+                        const indexB =
+                            ordenFacultades
+                                .indexOf(
+                                    b.fac
+                                );
+
+
+                        return (
+                            indexA -
+                            indexB
+                        );
+                    }
                 );
             }
 
 
             // =================================================
-            // CREAR FILAS
+            // CREAR CUERPO
             // =================================================
 
-            let maxFilas =
+            const maxFilas =
                 Math.max(
                     slots[0].length,
                     slots[1].length,
@@ -581,51 +1094,51 @@ Aquí está el código completo actualizado. Cambios realizados:
                 );
 
 
-            let bodyData = [];
+            const bodyData = [];
 
 
             for (
-                let f = 0;
-                f < maxFilas;
-                f++
+                let fila = 0;
+                fila < maxFilas;
+                fila++
             ) {
 
                 bodyData.push([
 
-                    slots[0][f]
+                    slots[0][fila]
                         ?
                         {
                             content:
-                                `${slots[0][f].nombre}\n(${slots[0][f].fac})`,
+                                `${slots[0][fila].nombre}\n(${slots[0][fila].fac})`,
 
                             data:
-                                slots[0][f]
+                                slots[0][fila]
                         }
                         :
                         "",
 
 
-                    slots[1][f]
+                    slots[1][fila]
                         ?
                         {
                             content:
-                                `${slots[1][f].nombre}\n(${slots[1][f].fac})`,
+                                `${slots[1][fila].nombre}\n(${slots[1][fila].fac})`,
 
                             data:
-                                slots[1][f]
+                                slots[1][fila]
                         }
                         :
                         "",
 
 
-                    slots[2][f]
+                    slots[2][fila]
                         ?
                         {
                             content:
-                                `${slots[2][f].nombre}\n(${slots[2][f].fac})`,
+                                `${slots[2][fila].nombre}\n(${slots[2][fila].fac})`,
 
                             data:
-                                slots[2][f]
+                                slots[2][fila]
                         }
                         :
                         ""
@@ -646,12 +1159,13 @@ Aquí está el código completo actualizado. Cambios realizados:
 
 
             // =================================================
-            // TABLA PDF
+            // TABLA
             // =================================================
 
             doc.autoTable({
 
-                startY: yPos,
+                startY:
+                    yPos,
 
                 margin: {
                     left: 10,
@@ -661,7 +1175,12 @@ Aquí está el código completo actualizado. Cambios realizados:
 
                 head: [
 
+                    // -----------------------------------------
+                    // TÍTULO
+                    // -----------------------------------------
+
                     [
+
                         {
                             content:
                                 `Horario Almuerzos ${rango}`,
@@ -669,155 +1188,214 @@ Aquí está el código completo actualizado. Cambios realizados:
                             colSpan: 3,
 
                             styles: {
-                                halign: "center",
-                                fillColor: [255, 242, 0],
-                                textColor: [0, 0, 0],
-                                fontStyle: "bold",
-                                fontSize: 10
+
+                                halign:
+                                    "center",
+
+                                fillColor:
+                                    [255, 242, 0],
+
+                                textColor:
+                                    [0, 0, 0],
+
+                                fontStyle:
+                                    "bold",
+
+                                fontSize:
+                                    10
                             }
                         }
+
                     ],
 
+
+                    // -----------------------------------------
+                    // HORARIOS
+                    // -----------------------------------------
 
                     [
 
                         {
-                            content: "12:00",
+                            content:
+                                "12:00",
 
                             styles: {
-                                fillColor: [210, 245, 215],
-                                textColor: [0, 0, 0],
-                                halign: "center",
-                                fontStyle: "bold"
+
+                                fillColor:
+                                    [210, 245, 215],
+
+                                textColor:
+                                    [0, 0, 0],
+
+                                halign:
+                                    "center",
+
+                                fontStyle:
+                                    "bold"
                             }
                         },
 
 
                         {
-                            content: "13:00",
+                            content:
+                                "13:00",
 
                             styles: {
-                                fillColor: [250, 230, 220],
-                                textColor: [0, 0, 0],
-                                halign: "center",
-                                fontStyle: "bold"
+
+                                fillColor:
+                                    [250, 230, 220],
+
+                                textColor:
+                                    [0, 0, 0],
+
+                                halign:
+                                    "center",
+
+                                fontStyle:
+                                    "bold"
                             }
                         },
 
 
                         {
-                            content: "14:00",
+                            content:
+                                "14:00",
 
                             styles: {
-                                fillColor: [215, 240, 250],
-                                textColor: [0, 0, 0],
-                                halign: "center",
-                                fontStyle: "bold"
+
+                                fillColor:
+                                    [215, 240, 250],
+
+                                textColor:
+                                    [0, 0, 0],
+
+                                halign:
+                                    "center",
+
+                                fontStyle:
+                                    "bold"
                             }
                         }
+
                     ]
+
                 ],
 
 
-                body: bodyData,
+                body:
+                    bodyData,
 
 
-                theme: "grid",
+                theme:
+                    "grid",
 
 
                 styles: {
-                    fontSize: 7.5,
-                    cellPadding: 2,
-                    font: "Helvetica"
+
+                    fontSize:
+                        7.5,
+
+                    cellPadding:
+                        2,
+
+                    font:
+                        "Helvetica",
+
+                    valign:
+                        "middle"
                 },
 
 
                 columnStyles: {
 
                     0: {
-                        fillColor: [235, 255, 240]
+                        fillColor:
+                            [235, 255, 240]
                     },
 
                     1: {
-                        fillColor: [255, 245, 240]
+                        fillColor:
+                            [255, 245, 240]
                     },
 
                     2: {
-                        fillColor: [235, 248, 255]
+                        fillColor:
+                            [235, 248, 255]
                     }
+
                 },
 
 
-                // =============================================
-                // COLOR DEL TEXTO POR FACULTAD
-                // =============================================
+                // =================================================
+                // COLOR POR FACULTAD
+                // =================================================
 
-                didParseCell: function(data) {
-
-                    if (
-
-                        data.section === "body"
-
-                        &&
-
-                        data.cell.raw
-
-                        &&
-
-                        data.cell.raw.data
-
-                    ) {
-
-                        let fac =
-                            data.cell.raw.data.fac;
-
+                didParseCell:
+                    function(data) {
 
                         if (
-                            coloresFacultad[fac]
+                            data.section === "body"
+                            &&
+                            data.cell.raw
+                            &&
+                            data.cell.raw.data
                         ) {
 
-                            data.cell.styles.textColor =
-                                coloresFacultad[fac];
+                            const fac =
+                                data.cell.raw.data.fac;
 
 
-                            data.cell.styles.fontStyle =
-                                "bold";
+                            if (
+                                coloresFacultad[fac]
+                            ) {
+
+                                data.cell.styles.textColor =
+                                    coloresFacultad[fac];
+
+
+                                data.cell.styles.fontStyle =
+                                    "bold";
+                            }
                         }
                     }
-                }
+
             });
 
 
             // =================================================
-            // SIGUIENTE SEMANA
+            // POSICIÓN SIGUIENTE TABLA
             // =================================================
 
             yPos =
-                doc.lastAutoTable.finalY
-                +
+                doc.lastAutoTable.finalY +
                 15;
 
 
+            // =================================================
+            // NUEVA PÁGINA
+            // =================================================
+
             if (
-                yPos > 220
-                &&
-                w < 3
+                yPos > 220 &&
+                semana < 3
             ) {
 
                 doc.addPage();
 
                 yPos = 15;
             }
+
         }
 
 
         // =====================================================
-        // DESCARGAR PDF
+        // DESCARGAR
         // =====================================================
 
         doc.save(
             "Cronograma_Almuerzos_Final.pdf"
         );
+
     }
 
 </script>
