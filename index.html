@@ -1,224 +1,827 @@
+Aquí está el código completo actualizado. Cambios realizados:
+
+* Nombres completos de Karen, Angélica y José David.
+* Agregados Marilyn Alexandra Molina Ramírez y Jorge Eduardo Enrique Hernandez Lima.
+* Todos ellos marcados como salida a las 5.
+* **Néstor Gálvez queda fijo a las 13:00**.
+* Merlin Bajan permanece fijo a las 12:00.
+* Corregí `"No Fac."` para que coincida correctamente con el orden y los colores.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Almuerzos CC</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
     <style>
-        :root { --navy: #0f172a; --blue: #2563eb; --accent: #38bdf8; }
-        body { background: var(--navy); color: white; font-family: 'Poppins', sans-serif; display: flex; flex-direction: column; align-items: center; padding: 50px; }
-        .card { background: rgba(30, 41, 59, 0.8); padding: 40px; border-radius: 24px; text-align: center; border: 1px solid rgba(255,255,255,0.1); width: 100%; max-width: 550px; }
-        h1 span { color: var(--accent); }
-        .btn { padding: 14px 30px; border-radius: 12px; border: none; cursor: pointer; font-weight: 600; background: var(--blue); color: white; transition: 0.4s; width: 100%; margin-top: 20px; }
-        .btn:hover { background: #1d4ed8; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4); }
-        input { padding: 14px; border-radius: 10px; border: none; width: 100%; margin-top: 10px; background: #1e293b; color: white; }
+        :root {
+            --navy: #0f172a;
+            --blue: #2563eb;
+            --accent: #38bdf8;
+        }
+
+        body {
+            background: var(--navy);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            padding: 40px;
+            border-radius: 24px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            width: 100%;
+            max-width: 550px;
+        }
+
+        h1 span {
+            color: var(--accent);
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            background: var(--blue);
+            color: white;
+            transition: 0.4s;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        input {
+            padding: 14px;
+            border-radius: 10px;
+            border: none;
+            width: 100%;
+            margin-top: 10px;
+            background: #1e293b;
+            color: white;
+            box-sizing: border-box;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="card">
         <h1>Almuerzos <span>CC</span></h1>
-        <p style="opacity: 0.7; font-size: 0.9rem;">Cronograma Mensual</p>
+
+        <p style="opacity: 0.7; font-size: 0.9rem;">
+            Cronograma Mensual
+        </p>
+
         <div style="text-align: left; margin-top: 25px;">
-            <label style="font-size: 0.75rem; color: #94a3b8; letter-spacing: 1px; font-weight: 600;">FECHA INICIAL (LUNES SEMANA 1)</label>
+            <label style="font-size: 0.75rem; color: #94a3b8; letter-spacing: 1px; font-weight: 600;">
+                FECHA INICIAL (LUNES SEMANA 1)
+            </label>
+
             <input type="date" id="startDate">
         </div>
-        <button class="btn" onclick="generateMonthly()">Descargar</button>
+
+        <button class="btn" onclick="generateMonthly()">
+            Descargar
+        </button>
     </div>
 
+
 <script>
+
+    // =========================================================
+    // AGENTES
+    // =========================================================
+
     const agentes = [
+
+        // ECONÓMICAS
         { nombre: "Saraí Churumia", fac: "Económicas", in10: true },
         { nombre: "Gabriela Jaes", fac: "Económicas" },
         { nombre: "Javier Alvarez", fac: "Económicas", out4: true },
+
+        // ODONTOLOGÍA
         { nombre: "Merlin Bajan", fac: "Odonto.", fijo12: true },
         { nombre: "Mónica Ordóñez", fac: "Odonto." },
-        { nombre: "Alejandro Vásquez", fac: "Salud", out4: true }, 
+
+        // SALUD
+        { nombre: "Alejandro Vásquez", fac: "Salud", out4: true },
         { nombre: "Joselyne Velásquez", fac: "Salud" },
         { nombre: "Jackeline Castillo", fac: "Salud", in10: true },
-        { nombre: "Mildred Cordero", fac: "Jurídicas", out4: true }, 
+
+        // JURÍDICAS
+        { nombre: "Mildred Cordero", fac: "Jurídicas", out4: true },
         { nombre: "Tania de León", fac: "Jurídicas", in10: true },
+
+        // HUMANIDADES
         { nombre: "Evelyn De León", fac: "Humanidades", out5: true },
-        { nombre: "Angelica Galvez", fac: "Humanidades", out5: true },
-        { nombre: "David Lopez", fac: "Humanidades", out5: true },   
+        { nombre: "Angelica Abigail Galvez Alvarez", fac: "Humanidades", out5: true },
+        { nombre: "José David López Morales", fac: "Humanidades", out5: true },
+
+        // NO FACULTAD
         { nombre: "Daniel Coyoy", fac: "No Fac." },
+        { nombre: "Marilyn Alexandra Molina Ramírez", fac: "No Fac.", out5: true },
+        { nombre: "Jorge Eduardo Enrique Hernandez Lima", fac: "No Fac.", out5: true },
+
+        // MÉDICAS
         { nombre: "Jorge Veliz", fac: "Médicas", out5: true },
-        { nombre: "Karen Ochoa", fac: "Médicas", out5: true },
+        { nombre: "Karen Sofía Ochoa Arana", fac: "Médicas", out5: true },
         { nombre: "Madelin Ovando", fac: "Médicas" },
-        { nombre: "Nestor Galvez", fac: "FACOM", out4: true },
+
+        // FACOM
+        // NÉSTOR SIEMPRE ALMUERZA A LAS 13:00
+        { nombre: "Nestor Galvez", fac: "FACOM", fijo13: true },
         { nombre: "Andrea Jiménez", fac: "FACOM" },
         { nombre: "Diego Chiché", fac: "FACOM" },
+
+        // FACEDU
         { nombre: "Ashley López", fac: "FACEDU", out4: true },
         { nombre: "Synndy Sanchez", fac: "FACEDU" },
         { nombre: "Mishell de León", fac: "FACEDU", in10: true },
+
+        // INGENIERÍA
         { nombre: "Bryan Hernandez", fac: "Ingeniería" },
+
+        // ARQUITECTURA
         { nombre: "Rafael Sánchez", fac: "Arquitectura", in10: true },
+
+        // TEOLOGÍA
         { nombre: "Marta Morales", fac: "Teología", in10: true },
-        { nombre: "Pablo Ibañez", fac: "UVIRTUAL", out4: true }, 
+
+        // UVIRTUAL
+        { nombre: "Pablo Ibañez", fac: "UVIRTUAL", out4: true },
         { nombre: "María Perdomo", fac: "UVIRTUAL" }
     ];
 
+
+    // =========================================================
+    // ORDEN DE FACULTADES
+    // =========================================================
+
     const ordenFacultades = [
-        "No Fac","FACOM", "FACEDU", "Económicas", "Salud", "Jurídicas", 
-        "Ingeniería", "Arquitectura", "Odonto.", "Médicas", 
-        "Humanidades", "UVIRTUAL", "Teología"
+        "No Fac.",
+        "FACOM",
+        "FACEDU",
+        "Económicas",
+        "Salud",
+        "Jurídicas",
+        "Ingeniería",
+        "Arquitectura",
+        "Odonto.",
+        "Médicas",
+        "Humanidades",
+        "UVIRTUAL",
+        "Teología"
     ];
 
+
+    // =========================================================
+    // COLORES POR FACULTAD
+    // =========================================================
+
     const coloresFacultad = {
-        "No Fac": [128, 128, 128],
-        "FACOM": [31, 110, 140],       
-        "FACEDU": [100, 180, 220],     
-        "Económicas": [190, 80, 40],   
-        "Salud": [210, 160, 10],       
-        "Jurídicas": [180, 20, 20],     
-        "Ingeniería": [60, 60, 60],     
-        "Odonto.": [120, 40, 120],     
-        "Humanidades": [20, 20, 20],   
-        "UVIRTUAL": [40, 140, 60],     
-        "Teología": [100, 150, 190],   
-        "Arquitectura": [150, 70, 30], 
-        "Médicas": [210, 160, 10]      
+
+        "No Fac.": [128, 128, 128],
+
+        "FACOM": [31, 110, 140],
+
+        "FACEDU": [100, 180, 220],
+
+        "Económicas": [190, 80, 40],
+
+        "Salud": [210, 160, 10],
+
+        "Jurídicas": [180, 20, 20],
+
+        "Ingeniería": [60, 60, 60],
+
+        "Odonto.": [120, 40, 120],
+
+        "Humanidades": [20, 20, 20],
+
+        "UVIRTUAL": [40, 140, 60],
+
+        "Teología": [100, 150, 190],
+
+        "Arquitectura": [150, 70, 30],
+
+        "Médicas": [210, 160, 10]
     };
 
+
+    // =========================================================
+    // INTENTAR DISTRIBUCIÓN
+    // =========================================================
+
     function intentarDistribucion() {
+
+        // 0 = 12:00
+        // 1 = 13:00
+        // 2 = 14:00
+
         let slots = [[], [], []];
-        let facsPorSlot = [new Set(), new Set(), new Set()];
+
+        let facsPorSlot = [
+            new Set(),
+            new Set(),
+            new Set()
+        ];
+
         let pool = [...agentes].sort(() => Math.random() - 0.5);
 
-        let mIdx = pool.findIndex(a => a.fijo12);
-        if(mIdx !== -1) { 
-            let m = pool.splice(mIdx, 1)[0]; 
-            slots[0].push(m); 
-            facsPorSlot[0].add(m.fac);
+
+        // =====================================================
+        // MERLIN FIJO A LAS 12:00
+        // =====================================================
+
+        let merlinIdx = pool.findIndex(a => a.fijo12);
+
+        if (merlinIdx !== -1) {
+
+            let merlin = pool.splice(merlinIdx, 1)[0];
+
+            slots[0].push(merlin);
+
+            facsPorSlot[0].add(merlin.fac);
         }
 
-        const maxCapacidad = Math.ceil(agentes.length / 3); 
+
+        // =====================================================
+        // NÉSTOR FIJO A LAS 13:00
+        // =====================================================
+
+        let nestorIdx = pool.findIndex(a => a.fijo13);
+
+        if (nestorIdx !== -1) {
+
+            let nestor = pool.splice(nestorIdx, 1)[0];
+
+            slots[1].push(nestor);
+
+            facsPorSlot[1].add(nestor.fac);
+        }
+
+
+        // =====================================================
+        // CAPACIDAD MÁXIMA
+        // =====================================================
+
+        const maxCapacidad =
+            Math.ceil(agentes.length / 3);
+
+
+        // =====================================================
+        // COLOCAR AGENTE
+        // =====================================================
 
         const colocarGrupo = (grupo) => {
-            let slotsPermitidos = [0, 1, 2].filter(s => {
-                if (grupo.some(ag => ag.in10 && s === 0)) return false;
-                if (grupo.some(ag => ag.out4 && s === 2)) return false;
-                if (slots[s].length + grupo.length > maxCapacidad) return false;
-                if (grupo.some(ag => facsPorSlot[s].has(ag.fac))) return false;
-                return true;
-            });
 
-            slotsPermitidos = slotsPermitidos
-                .map(s => ({ slot: s, orden: Math.random() }))
-                .sort((a, b) => (slots[a.slot].length - slots[b.slot].length) || (a.orden - b.orden))
-                .map(item => item.slot);
+            let slotsPermitidos =
+                [0, 1, 2].filter(s => {
 
-            if (slotsPermitidos.length === 0) return false;
 
-            let seleccionado = slotsPermitidos[0];
+                    // PERSONAS QUE ENTRAN A LAS 10
+                    // NO PUEDEN ALMORZAR A LAS 12
+
+                    if (
+                        grupo.some(
+                            ag => ag.in10 && s === 0
+                        )
+                    ) {
+                        return false;
+                    }
+
+
+                    // PERSONAS QUE SALEN A LAS 4
+                    // NO PUEDEN ALMORZAR A LAS 2
+
+                    if (
+                        grupo.some(
+                            ag => ag.out4 && s === 2
+                        )
+                    ) {
+                        return false;
+                    }
+
+
+                    // CONTROL DE CAPACIDAD
+
+                    if (
+                        slots[s].length + grupo.length
+                        >
+                        maxCapacidad
+                    ) {
+                        return false;
+                    }
+
+
+                    // NO REPETIR FACULTAD
+                    // EN EL MISMO HORARIO
+
+                    if (
+                        grupo.some(
+                            ag => facsPorSlot[s].has(ag.fac)
+                        )
+                    ) {
+                        return false;
+                    }
+
+
+                    return true;
+                });
+
+
+            // Priorizar horarios con menos personas
+
+            slotsPermitidos =
+                slotsPermitidos
+
+                    .map(s => ({
+                        slot: s,
+                        orden: Math.random()
+                    }))
+
+                    .sort(
+                        (a, b) =>
+                            (
+                                slots[a.slot].length
+                                -
+                                slots[b.slot].length
+                            )
+                            ||
+                            (
+                                a.orden
+                                -
+                                b.orden
+                            )
+                    )
+
+                    .map(item => item.slot);
+
+
+            // Si no hay horario disponible
+
+            if (
+                slotsPermitidos.length === 0
+            ) {
+                return false;
+            }
+
+
+            // Seleccionar horario
+
+            let seleccionado =
+                slotsPermitidos[0];
+
+
+            // Agregar agente
+
             for (let ag of grupo) {
+
                 slots[seleccionado].push(ag);
+
                 facsPorSlot[seleccionado].add(ag.fac);
             }
+
+
             return true;
         };
 
+
+        // =====================================================
+        // DISTRIBUIR AGENTES
+        // =====================================================
+
         for (let ag of pool) {
-            if (!colocarGrupo([ag])) return null;
+
+            if (!colocarGrupo([ag])) {
+                return null;
+            }
         }
 
+
+        // =====================================================
+        // VERIFICACIÓN FINAL
+        // =====================================================
+
         for (let i = 0; i < 3; i++) {
+
             let conteoFacultades = {};
+
+
             for (let ag of slots[i]) {
-                conteoFacultades[ag.fac] = (conteoFacultades[ag.fac] || 0) + 1;
-                if (conteoFacultades[ag.fac] > 1) {
-                    return null; 
+
+                conteoFacultades[ag.fac] =
+                    (
+                        conteoFacultades[ag.fac]
+                        ||
+                        0
+                    )
+                    +
+                    1;
+
+
+                if (
+                    conteoFacultades[ag.fac] > 1
+                ) {
+                    return null;
                 }
             }
         }
 
+
         return slots;
     }
 
+
+    // =========================================================
+    // GENERAR PDF MENSUAL
+    // =========================================================
+
     function generateMonthly() {
-        const startStr = document.getElementById('startDate').value;
-        if(!startStr) return alert("Selecciona el lunes inicial.");
-        
+
+        const startStr =
+            document.getElementById("startDate").value;
+
+
+        if (!startStr) {
+
+            alert("Selecciona el lunes inicial.");
+
+            return;
+        }
+
+
         const { jsPDF } = window.jspdf;
-        const doc = new jsPDF('p', 'mm', 'a4');
-        let baseDate = new Date(startStr + "T00:00:00");
+
+
+        const doc =
+            new jsPDF(
+                "p",
+                "mm",
+                "a4"
+            );
+
+
+        let baseDate =
+            new Date(
+                startStr + "T00:00:00"
+            );
+
 
         let yPos = 15;
 
-        for(let w=0; w<4; w++) {
-            let weekStart = new Date(baseDate); weekStart.setDate(baseDate.getDate() + (w * 7));
-            let weekEnd = new Date(weekStart); weekEnd.setDate(weekStart.getDate() + 4);
-            
+
+        // =====================================================
+        // GENERAR 4 SEMANAS
+        // =====================================================
+
+        for (let w = 0; w < 4; w++) {
+
+
+            let weekStart =
+                new Date(baseDate);
+
+
+            weekStart.setDate(
+                baseDate.getDate()
+                +
+                (w * 7)
+            );
+
+
+            let weekEnd =
+                new Date(weekStart);
+
+
+            weekEnd.setDate(
+                weekStart.getDate()
+                +
+                4
+            );
+
+
+            // =================================================
+            // BUSCAR DISTRIBUCIÓN VÁLIDA
+            // =================================================
+
             let slots = null;
+
             let intentos = 0;
-            while (!slots && intentos < 5000) {
-                slots = intentarDistribucion();
+
+
+            while (
+                !slots
+                &&
+                intentos < 10000
+            ) {
+
+                slots =
+                    intentarDistribucion();
+
                 intentos++;
             }
 
+
             if (!slots) {
-                alert(`No se logró una combinación perfecta para la Semana ${w+1} debido a las restricciones horarias. Inténtalo de nuevo.`);
+
+                alert(
+                    `No se logró una combinación perfecta para la Semana ${w + 1} debido a las restricciones horarias.`
+                );
+
                 return;
             }
 
+
+            // =================================================
+            // ORDENAR POR FACULTAD
+            // =================================================
+
             for (let i = 0; i < 3; i++) {
-                slots[i].sort((a, b) => ordenFacultades.indexOf(a.fac) - ordenFacultades.indexOf(b.fac));
+
+                slots[i].sort(
+                    (a, b) =>
+
+                        ordenFacultades.indexOf(a.fac)
+                        -
+                        ordenFacultades.indexOf(b.fac)
+                );
             }
 
-            let maxFilas = Math.max(slots[0].length, slots[1].length, slots[2].length);
+
+            // =================================================
+            // CREAR FILAS
+            // =================================================
+
+            let maxFilas =
+                Math.max(
+                    slots[0].length,
+                    slots[1].length,
+                    slots[2].length
+                );
+
+
             let bodyData = [];
 
-            for (let f = 0; f < maxFilas; f++) {
+
+            for (
+                let f = 0;
+                f < maxFilas;
+                f++
+            ) {
+
                 bodyData.push([
-                    slots[0][f] ? { content: `${slots[0][f].nombre}\n(${slots[0][f].fac})`, data: slots[0][f] } : "",
-                    slots[1][f] ? { content: `${slots[1][f].nombre}\n(${slots[1][f].fac})`, data: slots[1][f] } : "",
-                    slots[2][f] ? { content: `${slots[2][f].nombre}\n(${slots[2][f].fac})`, data: slots[2][f] } : ""
+
+                    slots[0][f]
+                        ?
+                        {
+                            content:
+                                `${slots[0][f].nombre}\n(${slots[0][f].fac})`,
+
+                            data:
+                                slots[0][f]
+                        }
+                        :
+                        "",
+
+
+                    slots[1][f]
+                        ?
+                        {
+                            content:
+                                `${slots[1][f].nombre}\n(${slots[1][f].fac})`,
+
+                            data:
+                                slots[1][f]
+                        }
+                        :
+                        "",
+
+
+                    slots[2][f]
+                        ?
+                        {
+                            content:
+                                `${slots[2][f].nombre}\n(${slots[2][f].fac})`,
+
+                            data:
+                                slots[2][f]
+                        }
+                        :
+                        ""
                 ]);
             }
 
-            const rango = `${weekStart.getDate()}/${weekStart.getMonth()+1} al ${weekEnd.getDate()}/${weekEnd.getMonth()+1}`;
+
+            // =================================================
+            // RANGO DE FECHAS
+            // =================================================
+
+            const rango =
+                `${weekStart.getDate()}/${weekStart.getMonth() + 1}`
+                +
+                ` al `
+                +
+                `${weekEnd.getDate()}/${weekEnd.getMonth() + 1}`;
+
+
+            // =================================================
+            // TABLA PDF
+            // =================================================
 
             doc.autoTable({
+
                 startY: yPos,
-                margin: { left: 10, right: 10 },
+
+                margin: {
+                    left: 10,
+                    right: 10
+                },
+
+
                 head: [
-                    [{content: `Horario Almuerzos ${rango}`, colSpan: 3, styles: {halign: 'center', fillColor: [255, 242, 0], textColor: [0,0,0], fontStyle: 'bold', fontSize: 10}}],
+
                     [
-                        {content: '12:00', styles: {fillColor: [210, 245, 215], textColor: [0,0,0], halign: 'center', fontStyle: 'bold'}}, 
-                        {content: '13:00', styles: {fillColor: [250, 230, 220], textColor: [0,0,0], halign: 'center', fontStyle: 'bold'}}, 
-                        {content: '14:00', styles: {fillColor: [215, 240, 250], textColor: [0,0,0], halign: 'center', fontStyle: 'bold'}}
+                        {
+                            content:
+                                `Horario Almuerzos ${rango}`,
+
+                            colSpan: 3,
+
+                            styles: {
+                                halign: "center",
+                                fillColor: [255, 242, 0],
+                                textColor: [0, 0, 0],
+                                fontStyle: "bold",
+                                fontSize: 10
+                            }
+                        }
+                    ],
+
+
+                    [
+
+                        {
+                            content: "12:00",
+
+                            styles: {
+                                fillColor: [210, 245, 215],
+                                textColor: [0, 0, 0],
+                                halign: "center",
+                                fontStyle: "bold"
+                            }
+                        },
+
+
+                        {
+                            content: "13:00",
+
+                            styles: {
+                                fillColor: [250, 230, 220],
+                                textColor: [0, 0, 0],
+                                halign: "center",
+                                fontStyle: "bold"
+                            }
+                        },
+
+
+                        {
+                            content: "14:00",
+
+                            styles: {
+                                fillColor: [215, 240, 250],
+                                textColor: [0, 0, 0],
+                                halign: "center",
+                                fontStyle: "bold"
+                            }
+                        }
                     ]
                 ],
+
+
                 body: bodyData,
-                theme: 'grid',
-                styles: { fontSize: 7.5, cellPadding: 2, font: 'Helvetica' },
-                columnStyles: {
-                    0: { fillColor: [235, 255, 240] }, 
-                    1: { fillColor: [255, 245, 240] },
-                    2: { fillColor: [235, 248, 255] }
+
+
+                theme: "grid",
+
+
+                styles: {
+                    fontSize: 7.5,
+                    cellPadding: 2,
+                    font: "Helvetica"
                 },
+
+
+                columnStyles: {
+
+                    0: {
+                        fillColor: [235, 255, 240]
+                    },
+
+                    1: {
+                        fillColor: [255, 245, 240]
+                    },
+
+                    2: {
+                        fillColor: [235, 248, 255]
+                    }
+                },
+
+
+                // =============================================
+                // COLOR DEL TEXTO POR FACULTAD
+                // =============================================
+
                 didParseCell: function(data) {
-                    if (data.section === 'body' && data.cell.raw && data.cell.raw.data) {
-                        let fac = data.cell.raw.data.fac;
-                        if (coloresFacultad[fac]) {
-                            data.cell.styles.textColor = coloresFacultad[fac];
-                            data.cell.styles.fontStyle = 'bold';
+
+                    if (
+
+                        data.section === "body"
+
+                        &&
+
+                        data.cell.raw
+
+                        &&
+
+                        data.cell.raw.data
+
+                    ) {
+
+                        let fac =
+                            data.cell.raw.data.fac;
+
+
+                        if (
+                            coloresFacultad[fac]
+                        ) {
+
+                            data.cell.styles.textColor =
+                                coloresFacultad[fac];
+
+
+                            data.cell.styles.fontStyle =
+                                "bold";
                         }
                     }
                 }
             });
 
-            yPos = doc.lastAutoTable.finalY + 15;
-            if (yPos > 220 && w < 3) { 
-                doc.addPage(); 
-                yPos = 15; 
+
+            // =================================================
+            // SIGUIENTE SEMANA
+            // =================================================
+
+            yPos =
+                doc.lastAutoTable.finalY
+                +
+                15;
+
+
+            if (
+                yPos > 220
+                &&
+                w < 3
+            ) {
+
+                doc.addPage();
+
+                yPos = 15;
             }
         }
 
-        doc.save("Cronograma_Almuerzos_Final.pdf");
+
+        // =====================================================
+        // DESCARGAR PDF
+        // =====================================================
+
+        doc.save(
+            "Cronograma_Almuerzos_Final.pdf"
+        );
     }
+
 </script>
+
 </body>
 </html>
+```
